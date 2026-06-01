@@ -19,20 +19,24 @@ RUN npm run build
 
 # ─────────────────────────────────────────────────────────────
 # Stage 2 — Nginx production server
+#
+# NGINX_CONF build arg controls which nginx config is used:
+#   "nginx.conf"        → Render / standalone (no backend proxy)
+#   "nginx.docker.conf" → Docker Compose (proxies /api/ to backend)
 # ─────────────────────────────────────────────────────────────
 FROM nginx:1.27-alpine AS runtime
 
-# Remove default nginx config
+ARG NGINX_CONF=nginx.conf
+
+# Remove default config
 RUN rm /etc/nginx/conf.d/default.conf
 
-# Copy our custom nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy the selected nginx config
+COPY ${NGINX_CONF} /etc/nginx/conf.d/default.conf
 
 # Copy built React app
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Non-root: nginx master runs as root to bind port 80,
-# but worker processes run as nginx user (default alpine behaviour)
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
