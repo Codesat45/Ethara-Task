@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: inventory-backend
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false   # Set this in Render dashboard (Neon PostgreSQL URL)
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        sync: false   # Set to your Vercel frontend URL
+      - key: DEBUG
+        value: false
+    healthCheckPath: /health
