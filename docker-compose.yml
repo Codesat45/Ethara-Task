@@ -1,58 +1,97 @@
 version: "3.9"
 
+# ─────────────────────────────────────────────────────────────────────────────
+# InvTrack — Docker Compose
+#
+# Services:
+#   postgres  — PostgreSQL 16 database
+#   backend   — FastAPI application (port 8000)
+#   frontend  — React + Nginx (port 3000)
+#
+# Usage:
+#   cp .env.example .env          # fill in your values
+#   docker compose up --build     # first run
+#   docker compose up -d          # subsequent runs (detached)
+#   docker compose down -v        # stop + remove volumes
+# ─────────────────────────────────────────────────────────────────────────────
+
 services:
-  # PostgreSQL Database
+
+  # ── PostgreSQL ─────────────────────────────────────────────
   postgres:
     image: postgres:16-alpine
-    container_name: inventory_postgres
+    container_name: invtrack_postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-inventory_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-inventory_pass}
-      POSTGRES_DB: ${POSTGRES_DB:-inventory_db}
+      POSTGRES_USER:     ${POSTGRES_USER:-invtrack_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-invtrack_pass}
+      POSTGRES_DB:       ${POSTGRES_DB:-invtrack_db}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5432:5432"          # expose for local DB tools (pgAdmin, DBeaver)
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-inventory_user} -d ${POSTGRES_DB:-inventory_db}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-invtrack_user} -d ${POSTGRES_DB:-invtrack_db}"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
+    networks:
+      - invtrack_net
 
-  # FastAPI Backend
+  # ── FastAPI Backend ────────────────────────────────────────
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: inventory_backend
+    container_name: invtrack_backend
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-inventory_user}:${POSTGRES_PASSWORD:-inventory_pass}@postgres:5432/${POSTGRES_DB:-inventory_db}
-      SECRET_KEY: ${SECRET_KEY:-change-this-secret-key-in-production}
-      DEBUG: ${DEBUG:-false}
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:3000,http://frontend}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-invtrack_user}:${POSTGRES_PASSWORD:-invtrack_pass}@postgres:5432/${POSTGRES_DB:-invtrack_db}
+      SECRET_KEY:   ${SECRET_KEY:-change-this-in-production-use-32-random-chars}
+      DEBUG:        ${DEBUG:-false}
+      ALLOWED_ORIGINS: >-
+        http://localhost:3000,
+        http://localhost:5173,
+        http://frontend,
+        ${EXTRA_ORIGINS:-}
     ports:
       - "8000:8000"
     depends_on:
       postgres:
         condition: service_healthy
-    volumes:
-      - ./backend:/app
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - invtrack_net
 
-  # React Frontend
+  # ── React + Nginx Frontend ─────────────────────────────────
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
       args:
+        # When using the nginx proxy (recommended), point to the same origin.
+        # When running frontend standalone, point to the backend host.
         VITE_API_URL: ${VITE_API_URL:-http://localhost:8000/api/v1}
-    container_name: inventory_frontend
+    container_name: invtrack_frontend
     restart: unless-stopped
     ports:
       - "3000:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    networks:
+      - invtrack_net
+
+# ─────────────────────────────────────────────────────────────
+networks:
+  invtrack_net:
+    driver: bridge
 
 volumes:
   postgres_data:

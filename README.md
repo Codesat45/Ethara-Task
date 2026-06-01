@@ -65,47 +65,89 @@
 |---|---|
 | Render | Backend & frontend hosting |
 | Neon PostgreSQL | Serverless cloud database (AWS us-east-1) |
-| Docker | Containerized deployment |
+| Docker + Docker Compose | Containerized local & production deployment |
+| Nginx | Frontend static file server + API reverse proxy |
 
 ---
 
 ## 📁 Project Structure
 
 ```
+├── .env.example              # Root env template for Docker Compose
+├── docker-compose.yml        # Orchestrates postgres + backend + frontend
+│
 ├── backend/
 │   ├── app/
-│   │   ├── core/          # Config, security, JWT deps
-│   │   ├── database/      # SQLAlchemy session & base
-│   │   ├── models/        # User, Product, Customer, Order
-│   │   ├── routes/        # auth, products, customers, orders, dashboard
-│   │   ├── schemas/       # Pydantic request/response models
-│   │   ├── services/      # Business logic layer
-│   │   └── main.py        # FastAPI app entry point
-│   ├── alembic/           # Database migrations
-│   ├── Dockerfile
+│   │   ├── core/             # Config, security, JWT deps
+│   │   ├── database/         # SQLAlchemy session & base
+│   │   ├── models/           # User, Product, Customer, Order
+│   │   ├── routes/           # auth, products, customers, orders, dashboard
+│   │   ├── schemas/          # Pydantic request/response models
+│   │   ├── services/         # Business logic layer
+│   │   └── main.py           # FastAPI app entry point
+│   ├── alembic/              # Database migrations
+│   ├── Dockerfile            # Multi-stage Python build
+│   ├── .dockerignore
 │   └── requirements.txt
 │
 └── frontend/
     ├── src/
-    │   ├── components/    # Layout, Modal, Pagination, Logo, etc.
-    │   ├── context/       # AuthContext (JWT state)
-    │   ├── pages/         # Landing, Login, Register, Dashboard, Products, Customers, Orders
-    │   ├── services/      # Axios API client
-    │   └── index.css      # Tailwind + custom animations
-    ├── Dockerfile
-    └── nginx.conf
+    │   ├── components/       # Layout, Modal, Pagination, Logo, etc.
+    │   ├── context/          # AuthContext (JWT state)
+    │   ├── pages/            # Landing, Login, Register, Dashboard, Products, Customers, Orders
+    │   ├── services/         # Axios API client
+    │   └── index.css         # Tailwind + custom animations
+    ├── Dockerfile            # Multi-stage Node build → Nginx
+    ├── .dockerignore
+    └── nginx.conf            # SPA routing + API proxy + gzip + security headers
 ```
 
 ---
 
 ## 🚀 Running Locally
 
-### Prerequisites
+### Option A — Docker Compose (recommended, zero setup)
+
+Requires: [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+
+```bash
+# 1. Clone and enter the project
+git clone https://github.com/Codesat45/Ethara-Task.git
+cd "Ethara-Task"
+
+# 2. Create your environment file
+cp .env.example .env
+# Edit .env — at minimum set a strong SECRET_KEY
+
+# 3. Build and start all services
+docker compose up --build
+
+# 4. Open the app
+#    Frontend  → http://localhost:3000
+#    API       → http://localhost:8000
+#    Swagger   → http://localhost:8000/docs
+```
+
+**Useful commands:**
+```bash
+docker compose up -d              # run in background
+docker compose logs -f backend    # stream backend logs
+docker compose logs -f frontend   # stream frontend logs
+docker compose down               # stop all containers
+docker compose down -v            # stop + delete database volume
+docker compose build --no-cache   # force full rebuild
+```
+
+---
+
+### Option B — Manual (without Docker)
+
+#### Prerequisites
 - Python 3.11+
 - Node.js 18+
 - PostgreSQL (or use the Neon cloud DB)
 
-### Backend
+#### Backend
 
 ```bash
 cd backend
@@ -115,40 +157,28 @@ venv\Scripts\activate        # Windows
 
 pip install -r requirements.txt
 
-# Copy and configure environment
 cp .env.example .env
-# Edit .env with your DATABASE_URL and SECRET_KEY
+# Edit .env — set DATABASE_URL and SECRET_KEY
 
-# Run migrations
 alembic upgrade head
-
-# Start server
 uvicorn app.main:app --reload --port 8000
 ```
 
-API will be available at `http://localhost:8000`  
-Swagger docs at `http://localhost:8000/docs`
+API → `http://localhost:8000` · Swagger → `http://localhost:8000/docs`
 
-### Frontend
+#### Frontend
 
 ```bash
 cd frontend
 npm install
 
-# Copy and configure environment
 cp .env.example .env
 # Set VITE_API_URL=http://localhost:8000/api/v1
 
 npm run dev
 ```
 
-App will be available at `http://localhost:5173`
-
-### Docker Compose (full stack)
-
-```bash
-docker-compose up --build
-```
+App → `http://localhost:5173`
 
 ---
 
