@@ -18,7 +18,7 @@ export default function Signup() {
     try {
       const res = await authAPI.signup({ full_name: data.full_name, email: data.email, password: data.password })
       login(res.data.access_token, res.data.user)
-      toast.success(`Welcome to InvFlow, ${res.data.user.full_name}!`)
+      toast.success(`Welcome to InvTrack, ${res.data.user.full_name}!`)
       navigate('/dashboard')
     } catch (err) {
       toast.error(err.message)
@@ -35,7 +35,7 @@ export default function Signup() {
         style={{ background: 'radial-gradient(circle, rgba(229,9,20,0.6) 0%, transparent 70%)' }} />
 
       <nav className="relative z-10 flex items-center justify-between px-8 py-5">
-        <Link to="/" className="text-netflix-red font-black text-2xl">INVFLOW</Link>
+        <Link to="/" className="text-netflix-red font-black text-2xl">INVTRACK</Link>
       </nav>
 
       <div className="relative z-10 flex-1 flex items-center justify-center px-4 py-12">

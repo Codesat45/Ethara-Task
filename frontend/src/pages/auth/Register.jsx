@@ -19,7 +19,7 @@ export default function Register() {
     setLoading(true)
     try {
       await registerUser(data.name, data.email, data.password)
-      toast.success('Welcome to StockFlow!')
+      toast.success('Welcome to InvTrack!')
       navigate('/dashboard')
     } catch (err) {
       toast.error(err.message)

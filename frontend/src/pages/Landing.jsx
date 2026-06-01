@@ -17,7 +17,7 @@ const VIDEOS = {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   SLIDESHOW DATA — 6 slides, each maps to a feature of StockFlow
+   SLIDESHOW DATA — 6 slides, each maps to a feature of InvTrack
 ═══════════════════════════════════════════════════════════════ */
 const SLIDES = [
   {
@@ -440,7 +440,7 @@ export default function Landing() {
             style={{ fontSize: 'clamp(2.8rem, 7vw, 5.5rem)', opacity: heroLoaded ? 1 : 0, transform: heroLoaded ? 'none' : 'translateY(24px)', transition: 'all 0.8s ease 0.35s', textShadow: '0 2px 40px rgba(0,0,0,0.85)' }}>
             Control Your<br />
             <span style={{ color: '#E50914', textShadow: '0 0 50px rgba(229,9,20,0.55), 0 2px 40px rgba(0,0,0,0.85)' }}>
-              <Typewriter text="Stock Flow" speed={70} />
+              <Typewriter text="InvTrack" speed={70} />
             </span>
           </h1>
           {/* sub */}
@@ -636,7 +636,7 @@ export default function Landing() {
             </div>
           </div>
           <div className="border-t border-white/5 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-white/20 text-xs">© {new Date().getFullYear()} StockFlow — Inventory & Order Management System</p>
+            <p className="text-white/20 text-xs">© {new Date().getFullYear()} InvTrack — Inventory & Order Management System</p>
             <div className="flex items-center gap-2 text-white/20 text-xs">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               <span>All systems operational</span>

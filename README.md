@@ -1,4 +1,4 @@
-# StockFlow — Inventory & Order Management System
+# InvTrack — Inventory & Order Management System
 
 > A production-ready, full-stack inventory management platform built with **FastAPI** and **React**. Manage products, customers, and orders in real time with JWT-secured endpoints and a sleek dark UI.
 
@@ -8,8 +8,7 @@
 
 | Resource | URL |
 |---|---|
-| **Frontend (Live App)** | [https://ethara-task-frontend-i2zx.onrender.com](https://ethara-task-frontend-i2zx.onrender.com) |
-| **Backend API** | [https://ethara-task-3597.onrender.com](https://ethara-task-3597.onrender.com) |
+| **Frontend (Live App)** | [https://ethara-task-frontend-i2zx.onrender.com](https://ethara-task-frontend-i2zx.onrender.com) || **Backend API** | [https://ethara-task-3597.onrender.com](https://ethara-task-3597.onrender.com) |
 | **API Docs (Swagger)** | [https://ethara-task-3597.onrender.com/docs](https://ethara-task-3597.onrender.com/docs) |
 | **API Docs (ReDoc)** | [https://ethara-task-3597.onrender.com/redoc](https://ethara-task-3597.onrender.com/redoc) |
 

@@ -18,7 +18,7 @@ export default function Logo({ size = 'md', className = '' }) {
       </svg>
       {/* Wordmark */}
       <span className={`font-black tracking-tight ${s.text}`}>
-        <span className="text-white">Stock</span><span className="text-[#E50914]">Flow</span>
+        <span className="text-white">Inv</span><span className="text-[#E50914]">Track</span>
       </span>
     </div>
   )

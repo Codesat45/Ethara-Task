@@ -49,7 +49,7 @@ export default function Login() {
             {/* Header */}
             <div className="mb-7">
               <h1 className="text-2xl font-black text-white mb-1">Sign In</h1>
-              <p className="text-[#666] text-sm">Welcome back to StockFlow</p>
+              <p className="text-[#666] text-sm">Welcome back to InvTrack</p>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

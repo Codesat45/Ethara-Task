@@ -305,7 +305,7 @@ export default function Dashboard() {
           <span className="text-[#555] text-xs">JWT Auth Active</span>
         </div>
         <div className="ml-auto text-[#333] text-xs font-mono">
-          StockFlow v1.0.0
+          InvTrack v1.0.0
         </div>
       </div>
     </div>
