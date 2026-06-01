@@ -1,13 +1,27 @@
 import axios from 'axios'
 
-// In production on Render, VITE_API_URL must be set as a build-time env var.
-// The fallback below ensures the correct backend is used even if the env var
-// is missing from the Render dashboard build environment.
-const API_URL =
-  import.meta.env.VITE_API_URL ||
-  (window.location.hostname.includes('onrender.com')
-    ? 'https://ethara-task-3597.onrender.com/api/v1'
-    : 'http://localhost:8000/api/v1')
+// Normalize the API URL — always ensure it ends with /api/v1
+function resolveApiUrl() {
+  let url = import.meta.env.VITE_API_URL || ''
+
+  // If env var is set but missing the /api/v1 prefix, add it
+  if (url && !url.includes('/api/v1')) {
+    url = url.replace(/\/$/, '') + '/api/v1'
+  }
+
+  // If no env var at all, use hostname-based detection at runtime
+  if (!url) {
+    if (typeof window !== 'undefined' && window.location.hostname.includes('onrender.com')) {
+      url = 'https://ethara-task-3597.onrender.com/api/v1'
+    } else {
+      url = 'http://localhost:8000/api/v1'
+    }
+  }
+
+  return url
+}
+
+const API_URL = resolveApiUrl()
 
 const api = axios.create({
   baseURL: API_URL,
