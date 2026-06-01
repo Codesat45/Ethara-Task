@@ -1,6 +1,13 @@
 import axios from 'axios'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
+// In production on Render, VITE_API_URL must be set as a build-time env var.
+// The fallback below ensures the correct backend is used even if the env var
+// is missing from the Render dashboard build environment.
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  (window.location.hostname.includes('onrender.com')
+    ? 'https://ethara-task-3597.onrender.com/api/v1'
+    : 'http://localhost:8000/api/v1')
 
 const api = axios.create({
   baseURL: API_URL,
